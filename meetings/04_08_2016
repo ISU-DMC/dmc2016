@@ -1,0 +1,13 @@
+Xiaojun Mao introduced his exploration of raw data. He presented features of the training data and testing data.
+
+Problems:
+
+- Missing data in “productGroup”, “rep” & “voucherID”;
+- Abnormal entries in raw data, like value 0 for “quantity”, “rep”;
+- Explanations for value 0 for “voucherID”;
+
+Suggestions:
+
+- Create columns of “Year” “Month” “Week” from “OrderDate”;
+- Create columns for return rate for each order / article;
+- Create error function for prediction.

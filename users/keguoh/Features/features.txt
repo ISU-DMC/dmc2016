@@ -1,0 +1,29 @@
+#google search
+https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=features+site:https://www.kaggle.com/c/acquire-valued-shoppers-challenge/forums&start=10
+
+
+#logistic
+https://www.kaggle.com/c/acquire-valued-shoppers-challenge/forums/t/7917/performance-of-logistic-regression-on-features-described-by-triskelion/69960
+
+#feature engineering
+https://ufal.mff.cuni.cz/~zabokrtsky/courses/npfl104/html/feature_engineering.pdf
+
+https://www.kaggle.com/c/acquire-valued-shoppers-challenge/forums/t/7688/feature-engineering-and-beat-the-benchmark-0-59347
+
+
+
+
+Customers related:
+
+total different colors by customer
+total different orders by customer
+ data, article, size productgroup, voucherID, deviceID paymentMthod
+
+
+customerID
+ArticleID
+OrderID
+colorCode
+
+quantity 
+price

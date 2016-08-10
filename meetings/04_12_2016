@@ -1,0 +1,9 @@
+Findings:
+
+- The rules to upload feature files, see dmc2016/data/feature/.
+- One voucherID per OrderID.
+- The feature price is total price, price_unit=price/quantity.
+- Compare price_unit with rrp, there are already some sales before using the voucher. (proportions: 0.5,0.66666,0.33333)
+- Two types of voucher, one is take XX(20%,30%,...100%) off. The other is XX(10$, 20$) off for orders above YY(100$,150$...)
+- Payment methods are initial letters of German, translate them into English for our understanding (see dmc2016/users/rodrigoplazola).
+- Reture rate vs price(rrp...) (see dmc2016/users/AndrewjSage)

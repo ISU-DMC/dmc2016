@@ -1,0 +1,11 @@
+
+# voucherID
+table(which(voucherID == 0) %in% which(voucherAmount == 0)) # VoucherID == 0 -> VoucherAmount == 0
+head(train[which(voucherAmount == 0),])
+
+table(train[which(voucherAmount != 0), "returnQuantity"])
+
+
+a <- voucherAmount + price - rrp*quantity
+summary(a)
+hist(a[a!=0])

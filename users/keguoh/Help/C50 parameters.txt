@@ -1,0 +1,4 @@
+1. trial = 10 is a common choice, but the trial number should be CV-ed. (large number leads to overfitting)
+2. Rule-based method does not show improvement against decision tree. "bands" option does not change results based on v02 matrix
+3. "fuzzyThrehold" gives better results everytime I tried and "noGrobalPruning" seems to help too
+4. Not sure about effect of 5-way

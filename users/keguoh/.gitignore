@@ -1,0 +1,7 @@
+# All files specified here will be ignored by git 
+
+# data file
+*.csv
+
+#
+*.pdf

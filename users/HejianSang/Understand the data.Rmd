@@ -1,0 +1,44 @@
+---
+title: "Exploration for the data"
+author: "Hejian Sang, joint work with Xiaojun Mao"
+date: "April 11, 2016"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## price
+- Explore "price" and "rrp":
+```{r names of train and test, echo=FALSE,cache=TRUE}
+setwd("C:/Users/hjsang/Desktop")
+train=readRDS("order_train.rds")
+train$unitprice=train$price/train$quantity
+train$unitprice[is.na(train$unitprice)]=0
+library(ggplot2)
+ggplot(aes(rrp,unitprice),data=train)+geom_point()+geom_abline(slope=1,intercept=0)+geom_abline(slope=0.9,intercept=0)+geom_abline(slope=0.8,intercept=0)+geom_abline(slope=0.5,intercept=0)+geom_abline(slope=0.4,intercept=0)
+# test=readRDS("order_class.rds")
+
+```
+
+## orderID VoucherID
+- Each OrderID only can use one Voucher
+```{r VoucherID, echo=FALSE,cache=TRUE}
+head(subset(train,voucherAmount!=0))
+```
+
+## VoucherAmount for each orderID
+- VoucherAmount has two sources
+- One is fixed amount, like 10 ,50 , and so on.
+- Another is fixed percentage
+```{r voucher, echo=FALSE,cache=TRUE}
+library(plyr)
+v.sub=ddply(train,.(orderID),summarise,coupon=unique(voucherAmount),s.price=sum(price),s.rrp=sum(rrp),s.quantity=sum(quantity))
+ggplot(aes(s.price,coupon),data=v.sub)+geom_point()
+```
+
+## VoucherAmount and total quantity for each order
+```{r qunatity, echo=FALSE,cache=TRUE}
+ggplot(aes(coupon,s.quantity),data=v.sub)+geom_point()
+```

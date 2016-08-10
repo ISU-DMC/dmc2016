@@ -1,0 +1,16 @@
+Column;Description;ValueRange;HaveNAs
+orderID;Order number; Natural number preceded by the letter "a";No
+orderDate;Date of the order;Date in format YYYY-MM-DD;No
+articleID;Article number;Natural number preceded by the letter "i";No
+colorCode;Color code for the article;Natural number;No
+sizeCode;Size of the article;Natural number of string of letters;No
+productGroup;Product group of the article;Natural number;Yes
+quantity;Quantity;Natural number including "O";No
+price;Total value in euros of the order position;Postive real number;No
+rrp;Recommended retail price;Postive real number including "O";Yes
+voucherID;Voucher number;Natural number preceded by the letter "v" and "O";Yes
+voucherAmount;Voucher value in euro per order;Postive real number;No
+customerID;Customer number;Natural number preceded by the letter "c";No
+deviceID;Device number;{1,2,3,4,5};No
+paymentMethod;Payment method;String of letters;No
+returnQuantity;Quantity of returns;Natural number including "O";No

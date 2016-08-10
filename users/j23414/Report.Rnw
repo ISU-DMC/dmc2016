@@ -1,0 +1,178 @@
+\documentclass{article}
+\usepackage[margin=0.5in]{geometry}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\usepackage{listings}
+\lstset{language=sas,
+basicstyle=\ttfamily\footnotesize,
+frame=single}
+
+\begin{document}
+
+\begin{center}
+\begin{LARGE}
+DATA MINING CUP Competition 2016
+\end{LARGE}
+
+\begin{LARGE}
+Predicting returns for the sales of discounted articles and voucher redeptions
+\end{LARGE}
+\end{center}
+
+\noindent
+The central topic of this year's task in the DATA MINING CUP competition is the prediction of the return rates for a fashion distributor. Returns have been a major cost driver for online shops for many years. This is particularly the case for assortments in the fashion industry. Many approches to solve this problem are based on forecasting models. Predicting returns was the central topic in the DATA MINING CUP of 2014. This year we look at the topic in more detail focusing in particular on the influence of discounted items and vouchers on return rates.
+
+\section*{Scenario}
+
+\noindent
+A fashion distributor sells articles of particular sizes and colors to its customers. In some cases items are returned to the distributor for various reasons. The order data and the related return data were recorded over a two-year period. The aim is to use this data and methods of data mining to build a model which enables a good prediction of return rates.
+
+\section*{Task}
+
+\noindent
+The task is to use known historical data from January 2014 to September 2015 (approx. 2.33 million order positions) to build a model that makes predictions about return rates for order positions. The attribute $returnQuantity$ in the given data indicates the number of returned articles for each order position (the value "0" means that the article will be kept while a value larger than "0" means that the article will be returned.) For sales in the period from October 2015 to December 2015 (approx. 340,000 order positions) the model should then provide predictions for the number of articles which will be returned per order position. The prediction has to be a value of the set of natural numbers including "0". The difference between the prediction nad the actual return rate for an order position (i.e. the error) must be as low as possible.
+
+\section*{Submission}
+
+\noindent
+Participants can enter their results until \textbf{18 May 2016 14:CEST}. The solution data must be reported in the following format (key columns and the prediction column) and sent in a file using:
+
+\begin{tabular}{llll}
+\toprule
+  &     Column name &      Description &    Value range \\
+\midrule
+& orderId & Order number & Natural number preceded by the letter "a"\\
+& articleID & Article number  & Natural number preceded by the letter "i"\\
+& colorCode & Color code  & Natural number\\
+& sizeCode &  Size code & Natural number or string of letters \\
+& prediction &  Prediction of the quantity of returns & Natural number and "0" \\
+\bottomrule
+\end{tabular}
+
+\section*{Data Exploration}
+
+<<eval=FALSE, cache=TRUE>>==
+library(ggplot2)
+library(knitr)
+
+# Load training and classification data
+#class<-read.table("../../data/raw_data/orders_class.txt",sep=";",header=TRUE)
+train<-read.table("../../data/raw_data/orders_train.txt",sep=";",header=TRUE)
+
+# Description of variables
+meta<-read.table("meta.txt",sep=";",header=TRUE)
+kable(meta,format="latex",booktabs=TRUE)
+@
+
+\begin{tabular}{llll}
+\toprule
+Column & Description & ValueRange & HaveNAs\\
+\midrule
+orderID & Order number & Natural number preceded by the letter a & No\\
+orderDate & Date of the order & Date in format YYYY-MM-DD & No\\
+articleID & Article number & Natural number preceded by the letter i & No\\
+colorCode & Color code for the article & Natural number & No\\
+sizeCode & Size of the article & Natural number of string of letters & No\\
+\addlinespace
+productGroup & Product group of the article & Natural number & Yes\\
+quantity & Quantity & Natural number including O & No\\
+price & Total value in euros of the order position & Postive real number & No\\
+rrp & Recommended retail price & Postive real number including O & Yes\\
+voucherID & Voucher number & Natural number preceded by the letter v and O & Yes\\
+\addlinespace
+voucherAmount & Voucher value in euro per order & Postive real number & No\\
+customerID & Customer number & Natural number preceded by the letter c & No\\
+deviceID & Device number & \{1,2,3,4,5\} & No\\
+paymentMethod & Payment method & String of letters & No\\
+returnQuantity & Quantity of returns & Natural number including O & No\\
+\bottomrule
+\end{tabular}
+
+<<eval=FALSE>>=
+# Summary of all variables
+kable(summary(train[,1:6]),format="latex",booktabs=TRUE)
+kable(summary(train[,7:12]),format="latex",booktabs=TRUE)
+kable(summary(train[,13:15]),format="latex",booktabs=TRUE)
+@
+
+\begin{tabular}{lllllll}
+\toprule
+  &     orderID &      orderDate &    articleID &   colorCode &    sizeCode &  productGroup\\
+\midrule
+ & a1602669:     46 & 2014-07-29:   9957 & i1003278:  26208 & Min.   :1000 & 38     :395163 & Min.   : 1.000\\
+ & a1180458:     44 & 2014-07-30:   7216 & i1002029:  17474 & 1st Qu.:1014 & 40     :393547 & 1st Qu.: 3.000\\
+ & a1168612:     39 & 2015-07-01:   7166 & i1000314:  14515 & Median :1493 & 42     :393244 & Median : 3.000\\
+ & a1691146:     39 & 2015-08-26:   6984 & i1000397:  13508 & Mean   :2148 & 44     :359473 & Mean   : 5.959\\
+ & a1243856:     38 & 2015-07-02:   6872 & i1002030:   8481 & 3rd Qu.:2854 & 36     :270462 & 3rd Qu.: 8.000\\
+\addlinespace
+ & a1287173:     38 & 2015-08-20:   6843 & i1003279:   8424 & Max.   :8888 & 34     :147173 & Max.   :90.000\\
+ & (Other) :2324921 & (Other)   :2280127 & (Other) :2236555 & NA & (Other):366103 & NA's   :351\\
+\bottomrule
+\end{tabular}
+
+\begin{tabular}{lllllll}
+\toprule
+  &    quantity &     price &      rrp &    voucherID & voucherAmount &    customerID\\
+\midrule
+ & Min.   : 0.0000 & Min.   :  0.00 & Min.   :  0.00 & 0       :1868227 & Min.   :  0.000 & c1070653:   1256\\
+ & 1st Qu.: 1.0000 & 1st Qu.: 20.00 & 1st Qu.: 29.99 & v1000078:  44769 & 1st Qu.:  0.000 & c1013018:    965\\
+ & Median : 1.0000 & Median : 29.99 & Median : 39.99 & v1000166:  37277 & Median :  0.000 & c1034875:    623\\
+ & Mean   : 0.9955 & Mean   : 35.40 & Mean   : 42.99 & v1000415:  31561 & Mean   :  2.153 & c1034293:    619\\
+ & 3rd Qu.: 1.0000 & 3rd Qu.: 40.00 & 3rd Qu.: 49.99 & v1000475:  18000 & 3rd Qu.:  0.000 & c1000042:    601\\
+\addlinespace
+ & Max.   :24.0000 & Max.   :623.76 & Max.   :799.99 & (Other) : 325325 & Max.   :300.000 & c1006586:    571\\
+ & NA & NA & NA's   :351 & NA's    :      6 & NA & (Other) :2320530\\
+\bottomrule
+\end{tabular}
+
+\begin{tabular}{llll}
+\toprule
+  &    deviceID &  paymentMethod & returnQuantity\\
+\midrule
+ & Min.   :1.000 & BPRG    :1810036 & Min.   :0.0000\\
+ & 1st Qu.:2.000 & CBA     : 179398 & 1st Qu.:0.0000\\
+ & Median :2.000 & PAYPALVC: 169009 & Median :1.0000\\
+ & Mean   :2.462 & KKE     : 106748 & Mean   :0.5214\\
+ & 3rd Qu.:3.000 & VORAUS  :  26877 & 3rd Qu.:1.0000\\
+\addlinespace
+ & Max.   :5.000 & NN      :  17271 & Max.   :5.0000\\
+ & NA & (Other) :  15826 & NA\\
+\bottomrule
+\end{tabular}
+
+\begin{lstlisting}
+$ awk -F";" '{print $1,$2,$3}' ../../data/raw_data/orders_train.txt | less
+\end{lstlisting}
+
+\section*{Plots}
+
+<<eval=FALSE>>=
+ggplot(train,aes(x=productGroup,y=voucherAmount,colour=returnQuantity>0))+
+  geom_point()
+
+@
+
+\section*{Neural Network Method}
+
+<<eval=FALSE>>==
+#install.packages("neuralnet")
+library(neuralnet)
+
+# Small running neural network
+small<-train[1:100,]
+nn<-neuralnet(returnQuantity~productGroup+quantity+price, data=small,hidden=2,
+              err.fct="ce",linear.output=FALSE)
+
+# Call neural network
+nn
+@
+
+
+
+\end{document}

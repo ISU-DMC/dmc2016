@@ -1,0 +1,8 @@
+#basic
+http://connor-johnson.com/2014/08/29/decision-trees-in-r-using-the-c50-package/
+
+#tutorial
+http://www.rulequest.com/see5-unix.html
+
+#tuning parameter
+http://www.euclidean.com/machine-learning-in-practice/2015/6/12/r-caret-and-parameter-tuning-c50
